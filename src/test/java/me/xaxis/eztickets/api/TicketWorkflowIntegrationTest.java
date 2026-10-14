@@ -102,7 +102,7 @@ class TicketWorkflowIntegrationTest {
     }
 
     // --------------------------------------------------
-    // Listing tickets
+    // Listing content
     // --------------------------------------------------
 
     @Test
@@ -113,7 +113,7 @@ class TicketWorkflowIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(
                         jsonPath(
-                                "$[*].id",
+                                "$.content[*].id",
                                 hasItem(ticket.getId().intValue())
                         )
                 );
@@ -237,7 +237,7 @@ class TicketWorkflowIntegrationTest {
     }
 
     // --------------------------------------------------
-    // Missing tickets
+    // Missing content
     // --------------------------------------------------
 
     @Test
