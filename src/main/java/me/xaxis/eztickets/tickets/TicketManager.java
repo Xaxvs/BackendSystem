@@ -1,5 +1,6 @@
 package me.xaxis.eztickets.tickets;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -27,13 +27,17 @@ public class TicketManager {
         return ticketRepository.save(new Ticket(title, description, email));
     }
 
-    @Transactional
-    public Ticket updateTicketStatus(long id, TicketStatus to) {
+    private Ticket getTicket(long id) {
         Optional<Ticket> optionalTicket = getTicketById(id);
         if (optionalTicket.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found");
         }
-        Ticket ticket = optionalTicket.get();
+        return optionalTicket.get();
+    }
+
+    @Transactional
+    public Ticket updateTicketStatus(long id, TicketStatus to) {
+        Ticket ticket = getTicket(id);
         TicketStatus status = ticket.getStatus();
 
         switch (to) {
@@ -64,10 +68,6 @@ public class TicketManager {
         return ticket;
     }
 
-    public List<Ticket> getTickets() {
-        return ticketRepository.findAll();
-    }
-
     public Pageable createTicketPageable(int page, int size, String direction, String sortBy) {
         if (page < 0 || size <= 0 || size > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to process tickets request");
@@ -75,8 +75,8 @@ public class TicketManager {
         if (Arrays.stream(TicketSortCases.values()).noneMatch(ticketSortCases -> ticketSortCases.getString().equals(sortBy))) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad sortBy tickets request");
         }
-        if(direction == null || Arrays.stream(Sort.Direction.values()).noneMatch(dirEnum -> dirEnum.name().toLowerCase(Locale.ROOT).equals(direction))) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad sortBy tickets request");
+        if (direction == null || Arrays.stream(Sort.Direction.values()).noneMatch(dirEnum -> dirEnum.name().toLowerCase(Locale.ROOT).equals(direction))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad direction tickets request");
         }
         return PageRequest.of(
                 page,
@@ -98,5 +98,17 @@ public class TicketManager {
                 TicketSpecifications.hasStatusAndText(ticketStatus, q),
                 createTicketPageable(page, size, direction, sortBy)
         );
+    }
+
+    public Ticket updateTicketAssignee(long ticketId, @NotNull Long agentId) {
+        Ticket ticket = getTicket(ticketId);
+        ticket.setAssigneeId(agentId);
+        return ticket;
+    }
+
+    public Ticket removeTicketAssignee(long id) {
+        Ticket ticket = getTicket(id);
+        ticket.setAssigneeId(null);
+        return ticket;
     }
 }

@@ -4,10 +4,10 @@ import jakarta.validation.constraints.*;
 
 import java.util.List;
 
-public record TicketPageResponse(
+public record PageResponse<T>(
 
         @NotNull
-        List<TicketResponse> content,
+        List<T> content,
 
         @PositiveOrZero
         int page,
