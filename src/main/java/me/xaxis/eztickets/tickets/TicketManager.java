@@ -1,8 +1,11 @@
 package me.xaxis.eztickets.tickets;
 
-import me.xaxis.eztickets.api.CreateTicketRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,6 +19,47 @@ public class TicketManager {
 
     public Ticket createTicket(String title, String description, String email) {
         return ticketRepository.save(new Ticket(title, description, email));
+    }
+
+    @Transactional
+    public Ticket updateTicketStatus(long id, TicketStatus to) {
+        Optional<Ticket> optionalTicket = getTicketById(id);
+        if (optionalTicket.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found");
+        }
+        Ticket ticket = optionalTicket.get();
+        TicketStatus status = ticket.getStatus();
+
+        switch (to) {
+            case OPEN -> {
+                if (status != TicketStatus.IN_PROGRESS)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot set ticket status to open");
+                ticket.open();
+            }
+            case IN_PROGRESS -> {
+                if (status == TicketStatus.OPEN || status == TicketStatus.RESOLVED) {
+                    ticket.setInProgress();
+                } else
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot set ticket status to in progress");
+            }
+            case RESOLVED -> {
+                if (status != TicketStatus.IN_PROGRESS)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot resolve ticket");
+                ticket.resolve();
+            }
+            case CLOSED -> {
+                if (status != TicketStatus.RESOLVED)
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot close ticket");
+                ticket.close();
+            }
+            case null, default ->
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Ticket status doesn't exist");
+        }
+        return ticket;
+    }
+
+    public List<Ticket> getTickets() {
+        return ticketRepository.findAll();
     }
 
     public Optional<Ticket> getTicketById(long id) {

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -37,8 +38,18 @@ public class TicketController {
         if (optionalTicket.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Ticket not found");
         }
-        Ticket ticket = optionalTicket.get();
-        return toTicketResponse(ticket);
+        return toTicketResponse(optionalTicket.get());
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<TicketResponse> setTicketStatus(@PathVariable long id, @Valid @RequestBody UpdateTicketStatusRequest request) {
+        Ticket ticket = ticketManager.updateTicketStatus(id, request.ticketStatus());
+        return ResponseEntity.status(HttpStatus.OK).body(toTicketResponse(ticket));
+    }
+
+    @GetMapping()
+    public List<TicketResponse> getTickets() {
+        return ticketManager.getTickets().stream().map(this::toTicketResponse).toList();
     }
 
     @PostMapping

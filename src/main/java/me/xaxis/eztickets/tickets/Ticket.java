@@ -33,6 +33,7 @@ public class Ticket {
 
     protected Ticket() {
     }
+
     public Ticket(
             String title,
             String description,
@@ -52,6 +53,18 @@ public class Ticket {
         return title;
     }
 
+    public void setInProgress() {
+        status = TicketStatus.IN_PROGRESS;
+    }
+
+    public void resolve() {
+        status = TicketStatus.RESOLVED;
+    }
+
+    public void close() {
+        status = TicketStatus.CLOSED;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -66,5 +79,9 @@ public class Ticket {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public void open() {
+        status = TicketStatus.OPEN;
     }
 }
