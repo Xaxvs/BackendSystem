@@ -13,20 +13,20 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 40)
-    private String display_name;
+    @Column(name = "display_name", nullable = false, length = 40)
+    private String displayName;
 
     @Column(nullable = false, length = 254)
     private String email;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
-    private Instant created_at;
+    private Instant createdAt;
 
     protected Agent() {}
 
-    public Agent(String display_name, String email) {
-        this.display_name = display_name;
+    public Agent(String displayName, String email) {
+        this.displayName = displayName;
         this.email = email;
     }
 
@@ -39,10 +39,10 @@ public class Agent {
     }
 
     public Instant getCreatedAt() {
-        return created_at;
+        return createdAt;
     }
 
     public String getDisplayName() {
-        return display_name;
+        return displayName;
     }
 }
