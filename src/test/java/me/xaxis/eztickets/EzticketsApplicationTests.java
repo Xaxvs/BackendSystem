@@ -1,8 +1,7 @@
 package me.xaxis.eztickets;
 
 import jakarta.transaction.Transactional;
-import me.xaxis.eztickets.api.TicketController;
-import me.xaxis.eztickets.api.TicketResponse;
+import me.xaxis.eztickets.api.ticket.TicketController;
 import me.xaxis.eztickets.tickets.Ticket;
 import me.xaxis.eztickets.tickets.TicketRepository;
 import org.junit.jupiter.api.Test;

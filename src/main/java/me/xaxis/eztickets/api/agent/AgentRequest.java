@@ -1,21 +1,19 @@
-package me.xaxis.eztickets.api;
+package me.xaxis.eztickets.api.agent;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record TicketRequest(
+public record AgentRequest(
 
         @NotBlank
-        @Size(max = 200, min = 1)
-        String title,
-
-        @NotBlank
-        String description,
+        @Size(max = 40, min = 2)
+        String displayName,
 
         @Size(max = 254, min = 1)
         @Email
         @NotBlank
         String email
+
 ) {
 }

@@ -2,6 +2,7 @@ package me.xaxis.eztickets.tickets;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.jspecify.annotations.Nullable;
 
 import java.time.Instant;
 
@@ -31,6 +32,9 @@ public class Ticket {
     @CreationTimestamp
     private Instant createdAt;
 
+    @Column(name = "assignee_id")
+    private Long assigneeId;
+
     protected Ticket() {
     }
 
@@ -43,6 +47,14 @@ public class Ticket {
         this.description = description;
         this.email = email;
         this.status = TicketStatus.OPEN;
+    }
+
+    public Long getAssigneeId() {
+        return assigneeId;
+    }
+
+    public void setAssigneeId(Long assigneeId) {
+        this.assigneeId = assigneeId;
     }
 
     public Long getId() {

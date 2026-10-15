@@ -1,6 +1,7 @@
-package me.xaxis.eztickets.api;
+package me.xaxis.eztickets.api.ticket;
 
 import jakarta.validation.Valid;
+import me.xaxis.eztickets.api.PageResponse;
 import me.xaxis.eztickets.tickets.Ticket;
 import me.xaxis.eztickets.tickets.TicketManager;
 import me.xaxis.eztickets.tickets.TicketStatus;
@@ -29,7 +30,8 @@ public class TicketController {
                 ticket.getDescription(),
                 ticket.getEmail(),
                 ticket.getStatus(),
-                ticket.getCreatedAt()
+                ticket.getCreatedAt(),
+                ticket.getAssigneeId()
         );
     }
 
@@ -42,6 +44,18 @@ public class TicketController {
         return toTicketResponse(optionalTicket.get());
     }
 
+    @DeleteMapping("/{id}/assignee")
+    public ResponseEntity<TicketResponse> removeTicketAssignee(@PathVariable long id) {
+        Ticket ticket = ticketManager.removeTicketAssignee(id);
+        return ResponseEntity.status(HttpStatus.OK).body(toTicketResponse(ticket));
+    }
+
+    @PutMapping("/{id}/assignee")
+    public ResponseEntity<TicketResponse> setTicketAssignee(@PathVariable long id, @Valid @RequestBody AssignAgentRequest request){
+        Ticket ticket = ticketManager.updateTicketAssignee(id, request.agentId());
+        return ResponseEntity.status(HttpStatus.OK).body(toTicketResponse(ticket));
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<TicketResponse> setTicketStatus(@PathVariable long id, @Valid @RequestBody UpdateTicketStatusRequest request) {
         Ticket ticket = ticketManager.updateTicketStatus(id, request.ticketStatus());
@@ -49,7 +63,7 @@ public class TicketController {
     }
 
     @GetMapping
-    public ResponseEntity<TicketPageResponse> getTickets(
+    public ResponseEntity<PageResponse<TicketResponse>> getTickets(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -60,7 +74,7 @@ public class TicketController {
 
         Page<Ticket> tickets = ticketManager.findTickets(page, size, direction, sortBy, status, q);
 
-        TicketPageResponse request = new TicketPageResponse(
+        PageResponse<TicketResponse> request = new PageResponse<>(
                 tickets.getContent().stream().map(this::toTicketResponse).toList(),
                 tickets.getNumber(),
                 tickets.getSize(),

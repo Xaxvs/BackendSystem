@@ -4,16 +4,16 @@ import jakarta.validation.constraints.*;
 
 import java.util.List;
 
-public record TicketPageResponse(
+public record PageResponse<T>(
 
         @NotNull
-        List<TicketResponse> content,
+        List<T> content,
 
         @PositiveOrZero
         int page,
 
         @Positive
-        @Min(20)
+        @Min(1)
         @Max(100)
         int size,
 

@@ -1,4 +1,4 @@
-package me.xaxis.eztickets.api;
+package me.xaxis.eztickets.api.ticket;
 
 import me.xaxis.eztickets.tickets.TicketStatus;
 
@@ -10,6 +10,7 @@ public record TicketResponse(
         String description,
         String email,
         TicketStatus status,
-        Instant createdAt
+        Instant createdAt,
+        Long assigneeId
 ) {
 }
