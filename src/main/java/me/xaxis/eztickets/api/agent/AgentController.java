@@ -26,9 +26,9 @@ public class AgentController {
     private AgentResponse toAgentResponse(Agent agent) {
         return new AgentResponse(
                 agent.getId(),
-                agent.getDisplay_name(),
+                agent.getDisplayName(),
                 agent.getEmail(),
-                agent.getCreated_at()
+                agent.getCreatedAt()
         );
     }
 

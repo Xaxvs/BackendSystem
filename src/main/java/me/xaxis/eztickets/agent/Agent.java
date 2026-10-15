@@ -13,7 +13,7 @@ public class Agent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false, length = 40)
     private String display_name;
 
     @Column(nullable = false, length = 254)
@@ -38,11 +38,11 @@ public class Agent {
         return id;
     }
 
-    public Instant getCreated_at() {
+    public Instant getCreatedAt() {
         return created_at;
     }
 
-    public String getDisplay_name() {
+    public String getDisplayName() {
         return display_name;
     }
 }

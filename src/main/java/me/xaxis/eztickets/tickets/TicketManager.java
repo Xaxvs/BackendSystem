@@ -1,6 +1,8 @@
 package me.xaxis.eztickets.tickets;
 
 import jakarta.validation.constraints.NotNull;
+import me.xaxis.eztickets.agent.Agent;
+import me.xaxis.eztickets.agent.AgentRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,9 +20,11 @@ import java.util.Optional;
 public class TicketManager {
 
     private final TicketRepository ticketRepository;
+    private final AgentRepository agentRepository;
 
-    public TicketManager(TicketRepository ticketRepository) {
+    public TicketManager(TicketRepository ticketRepository, AgentRepository agentRepository) {
         this.ticketRepository = ticketRepository;
+        this.agentRepository = agentRepository;
     }
 
     public Ticket createTicket(String title, String description, String email) {
@@ -100,12 +104,18 @@ public class TicketManager {
         );
     }
 
+    @Transactional
     public Ticket updateTicketAssignee(long ticketId, @NotNull Long agentId) {
         Ticket ticket = getTicket(ticketId);
+        Optional<Agent> agent = agentRepository.findById(agentId);
+        if(agent.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found");
+        }
         ticket.setAssigneeId(agentId);
         return ticket;
     }
 
+    @Transactional
     public Ticket removeTicketAssignee(long id) {
         Ticket ticket = getTicket(id);
         ticket.setAssigneeId(null);

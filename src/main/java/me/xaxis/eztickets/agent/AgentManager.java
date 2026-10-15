@@ -22,14 +22,14 @@ public class AgentManager {
     }
 
     public Agent createAgent(String displayName, String email) {
-        return new Agent(displayName, email);
+        return agentRepository.save(new Agent(displayName, email));
     }
 
     public Optional<Agent> getAgentById(Long id) {
         return agentRepository.findById(id);
     }
 
-    public Pageable createTicketPageable(int page, int size, String direction, String sortBy) {
+    public Pageable createAgentPageable(int page, int size, String direction, String sortBy) {
         if (page < 0 || size <= 0 || size > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to process agents request");
         }
@@ -51,7 +51,7 @@ public class AgentManager {
     }
 
     public Page<Agent> findAgents(int page, int size, String direction, String sortBy) {
-        return agentRepository.findAll(createTicketPageable(page, size, direction, sortBy));
+        return agentRepository.findAll(createAgentPageable(page, size, direction, sortBy));
     }
 
 }
