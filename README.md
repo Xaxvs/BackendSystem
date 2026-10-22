@@ -1,4 +1,4 @@
-### Intend to rename to RmvConflikts
+### Intend to rename to RmvConflicts
 
 Main focus:
 
