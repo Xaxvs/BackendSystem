@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: rmv_conflicts
+  datasource:
+    url: jdbc:postgresql://localhost:5432/eztickets
+    username: rmv_conflicts_app
+    password: ${DATABASE_PASSWORD}
