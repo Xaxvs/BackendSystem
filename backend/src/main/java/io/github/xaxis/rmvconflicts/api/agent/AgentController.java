@@ -17,59 +17,59 @@ import java.util.Optional;
 @RequestMapping("/agents")
 public class AgentController {
 
-    private final AgentManager agentManager;
+  private final AgentManager agentManager;
 
-    public AgentController(AgentManager agentManager) {
-        this.agentManager = agentManager;
+  public AgentController(AgentManager agentManager) {
+    this.agentManager = agentManager;
+  }
+
+  private AgentResponse toAgentResponse(Agent agent) {
+    return new AgentResponse(
+        agent.getId(),
+        agent.getDisplayName(),
+        agent.getEmail(),
+        agent.getCreatedAt()
+    );
+  }
+
+  @GetMapping("/{id}")
+  public AgentResponse getAgent(@PathVariable long id) {
+    Optional<Agent> optionalTicket = agentManager.getAgentById(id);
+    if (optionalTicket.isEmpty()) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found");
     }
+    return toAgentResponse(optionalTicket.get());
+  }
 
-    private AgentResponse toAgentResponse(Agent agent) {
-        return new AgentResponse(
-                agent.getId(),
-                agent.getDisplayName(),
-                agent.getEmail(),
-                agent.getCreatedAt()
-        );
-    }
+  @GetMapping
+  public ResponseEntity<PageResponse<AgentResponse>> getAgents(
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(defaultValue = "createdAt") String sortBy,
+      @RequestParam(defaultValue = "desc") String direction
+  ) {
 
-    @GetMapping("/{id}")
-    public AgentResponse getAgent(@PathVariable long id) {
-        Optional<Agent> optionalTicket = agentManager.getAgentById(id);
-        if (optionalTicket.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Agent not found");
-        }
-        return toAgentResponse(optionalTicket.get());
-    }
+    Page<Agent> tickets = agentManager.findAgents(page, size, direction, sortBy);
 
-    @GetMapping
-    public ResponseEntity<PageResponse<AgentResponse>> getAgents(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String direction
-    ) {
+    PageResponse<AgentResponse> request = new PageResponse<>(
+        tickets.getContent().stream().map(this::toAgentResponse).toList(),
+        tickets.getNumber(),
+        tickets.getSize(),
+        tickets.getTotalPages(),
+        tickets.getTotalElements(),
+        tickets.isFirst(),
+        tickets.isLast()
+    );
 
-        Page<Agent> tickets = agentManager.findAgents(page, size, direction, sortBy);
+    return ResponseEntity.ok(request);
+  }
 
-        PageResponse<AgentResponse> request = new PageResponse<>(
-                tickets.getContent().stream().map(this::toAgentResponse).toList(),
-                tickets.getNumber(),
-                tickets.getSize(),
-                tickets.getTotalPages(),
-                tickets.getTotalElements(),
-                tickets.isFirst(),
-                tickets.isLast()
-        );
-
-        return ResponseEntity.ok(request);
-    }
-
-    @PostMapping
-    public ResponseEntity<AgentResponse> createAgent(@Valid @RequestBody AgentRequest agentRequest) {
-        Agent agent = agentManager.createAgent(
-                agentRequest.displayName(),
-                agentRequest.email()
-        );
-        return ResponseEntity.status(HttpStatus.CREATED).body(toAgentResponse(agent));
-    }
+  @PostMapping
+  public ResponseEntity<AgentResponse> createAgent(@Valid @RequestBody AgentRequest agentRequest) {
+    Agent agent = agentManager.createAgent(
+        agentRequest.displayName(),
+        agentRequest.email()
+    );
+    return ResponseEntity.status(HttpStatus.CREATED).body(toAgentResponse(agent));
+  }
 }
