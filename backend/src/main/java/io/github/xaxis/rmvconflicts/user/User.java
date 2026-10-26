@@ -25,12 +25,25 @@ public class User {
   @Column(nullable = false)
   private String email;
 
+  @Getter
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private UserStatus status;
+
   protected User() {
   }
 
   public User(String displayName, String email) {
     this.displayName = displayName.toLowerCase(Locale.ROOT);
     this.email = email.toLowerCase(Locale.ROOT);
+  }
+
+  public void setActive(UserStatus userStatus) {
+    status = UserStatus.CLAIM_ACTIVE;
+  }
+
+  public void setIdle(UserStatus userStatus) {
+    status = UserStatus.IDLE;
   }
 
 }

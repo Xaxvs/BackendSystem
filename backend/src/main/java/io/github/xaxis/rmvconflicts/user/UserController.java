@@ -43,7 +43,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> getUser(@PathVariable String id) {
+  public UserResponse getUser(@PathVariable String id) {
     Optional<User> optionalUser = userManager.getUserById(id);
 
     if (optionalUser.isEmpty()) {
@@ -52,7 +52,7 @@ public class UserController {
 
     User user = optionalUser.get();
 
-    return ResponseEntity.ok(toUserResponse(user));
+    return toUserResponse(user);
   }
 
   @GetMapping
@@ -60,10 +60,11 @@ public class UserController {
       @RequestParam(defaultValue = "0") int page,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(defaultValue = "displayName") String sortBy,
-      @RequestParam(defaultValue = "desc") String direction
+      @RequestParam(defaultValue = "desc") String direction,
+      @RequestParam(required = false) UserStatus userStatus
   ) {
 
-    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy);
+    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy, userStatus);
 
     PageResponse<UserResponse> request = new PageResponse<>(
         tickets.getContent().stream().map(this::toUserResponse).toList(),

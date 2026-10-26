@@ -51,7 +51,10 @@ public class UserManager {
     );
   }
 
-  public Page<User> findUsers(int page, int size, String direction, String sortBy) {
-    return userRepository.findAll(createUserPageable(page, size, direction, sortBy));
+  public Page<User> findUsers(int page, int size, String direction, String sortBy, UserStatus userStatus) {
+    return userRepository.findAll(
+        UserSpecifications.hasStatus(userStatus),
+        createUserPageable(page, size, direction, sortBy)
+    );
   }
 }
