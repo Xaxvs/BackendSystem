@@ -1,5 +1,6 @@
 package io.github.xaxis.rmvconflicts.user;
 
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +26,11 @@ public class UserManager {
     return userRepository.save(new User(displayName, email));
   }
 
-  public void deleteUser(String id) {
+  public void deleteUser(@NotNull Long id) {
     userRepository.deleteById(id);
   }
 
-  public Optional<User> getUserById(String id) {
+  public Optional<User> getUserById(@NotNull Long id) {
     return userRepository.findById(id);
   }
 
@@ -51,9 +52,9 @@ public class UserManager {
     );
   }
 
-  public Page<User> findUsers(int page, int size, String direction, String sortBy, UserStatus userStatus) {
+  public Page<User> findUsers(int page, int size, String direction, String sortBy, UserStatus userStatus, String q) {
     return userRepository.findAll(
-        UserSpecifications.hasStatus(userStatus),
+        UserSpecifications.hasStatus(userStatus).and(UserSpecifications.hasText(q)),
         createUserPageable(page, size, direction, sortBy)
     );
   }

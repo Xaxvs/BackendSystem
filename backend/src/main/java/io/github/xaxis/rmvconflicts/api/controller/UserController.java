@@ -1,7 +1,11 @@
-package io.github.xaxis.rmvconflicts.user;
+package io.github.xaxis.rmvconflicts.api.controller;
 
 import io.github.xaxis.rmvconflicts.api.PageResponse;
+import io.github.xaxis.rmvconflicts.api.dto.request.UserRequest;
+import io.github.xaxis.rmvconflicts.api.dto.response.UserResponse;
+import io.github.xaxis.rmvconflicts.user.*;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +26,11 @@ public class UserController {
 
 
   public UserResponse toUserResponse(User user) {
-    return new UserResponse(user.getId(), user.getDisplayName(), user.getEmail());
+    return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
   }
 
   @DeleteMapping("/{id}")
-  public void deleteUser(@PathVariable String id) {
+  public void deleteUser(@PathVariable @NotNull Long id) {
     Optional<User> optionalUser = userManager.getUserById(id);
 
     if (optionalUser.isEmpty()) {
@@ -43,7 +47,7 @@ public class UserController {
   }
 
   @GetMapping("/{id}")
-  public UserResponse getUser(@PathVariable String id) {
+  public UserResponse getUser(@PathVariable @NotNull Long id) {
     Optional<User> optionalUser = userManager.getUserById(id);
 
     if (optionalUser.isEmpty()) {
@@ -61,10 +65,11 @@ public class UserController {
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(defaultValue = "displayName") String sortBy,
       @RequestParam(defaultValue = "desc") String direction,
-      @RequestParam(required = false) UserStatus userStatus
+      @RequestParam(required = false) UserStatus userStatus,
+      @RequestParam(required = false) String q
   ) {
 
-    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy, userStatus);
+    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy, userStatus, q);
 
     PageResponse<UserResponse> request = new PageResponse<>(
         tickets.getContent().stream().map(this::toUserResponse).toList(),

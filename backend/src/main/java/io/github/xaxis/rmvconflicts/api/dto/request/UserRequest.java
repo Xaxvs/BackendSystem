@@ -1,4 +1,4 @@
-package io.github.xaxis.rmvconflicts.user;
+package io.github.xaxis.rmvconflicts.api.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
