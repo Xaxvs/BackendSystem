@@ -1,16 +1,17 @@
-package io.github.xaxis.rmvconflicts.project.membership;
+package io.github.xaxis.rmvconflicts.membership;
 
 import io.github.xaxis.rmvconflicts.project.Project;
 import io.github.xaxis.rmvconflicts.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(
     name = "user_memberships",
     uniqueConstraints = @UniqueConstraint(
-        name = "uk_project_membership_project_user",
         columnNames = {"project_id", "user_id"}
     )
 )
@@ -23,10 +24,12 @@ public class UserMembership {
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "project_id", nullable = false)
   private Project project;
 
   @Getter
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
@@ -43,5 +46,10 @@ public class UserMembership {
     this.project = project;
     this.user = user;
     this.role = role;
+  }
+
+  public void cleanup() {
+    project = null;
+    user = null;
   }
 }

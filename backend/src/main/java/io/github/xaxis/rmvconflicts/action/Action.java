@@ -5,6 +5,8 @@ import io.github.xaxis.rmvconflicts.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.Instant;
 
@@ -19,12 +21,13 @@ public class Action {
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "project_id", nullable = false)
   private Project project;
 
   @Getter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(name = "user_id")
   private User actor;
 
   @Getter
@@ -46,4 +49,8 @@ public class Action {
     this.actor = actor;
   }
 
+  public void cleanup() {
+    project = null;
+    actor = null;
+  }
 }

@@ -3,7 +3,10 @@ package io.github.xaxis.rmvconflicts.api.controller;
 import io.github.xaxis.rmvconflicts.api.PageResponse;
 import io.github.xaxis.rmvconflicts.api.dto.request.UserRequest;
 import io.github.xaxis.rmvconflicts.api.dto.response.UserResponse;
-import io.github.xaxis.rmvconflicts.user.*;
+import io.github.xaxis.rmvconflicts.api.exceptions.UserNotFoundException;
+import io.github.xaxis.rmvconflicts.user.User;
+import io.github.xaxis.rmvconflicts.user.UserManager;
+import io.github.xaxis.rmvconflicts.user.UserStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
@@ -11,8 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -24,19 +25,18 @@ public class UserController {
     this.userManager = userManager;
   }
 
-
   public UserResponse toUserResponse(User user) {
-    return new UserResponse(user.getId(), user.getUsername(), user.getEmail());
+    return new UserResponse(
+        user.getId(),
+        user.getUsername(),
+        user.getEmail(),
+        user.getCreatedAt(),
+        user.getLastActivityAt(),
+        user.getStatus());
   }
 
   @DeleteMapping("/{id}")
   public void deleteUser(@PathVariable @NotNull Long id) {
-    Optional<User> optionalUser = userManager.getUserById(id);
-
-    if (optionalUser.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-    }
-
     userManager.deleteUser(id);
   }
 
@@ -48,14 +48,7 @@ public class UserController {
 
   @GetMapping("/{id}")
   public UserResponse getUser(@PathVariable @NotNull Long id) {
-    Optional<User> optionalUser = userManager.getUserById(id);
-
-    if (optionalUser.isEmpty()) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-    }
-
-    User user = optionalUser.get();
-
+    User user = userManager.getUser(id);
     return toUserResponse(user);
   }
 

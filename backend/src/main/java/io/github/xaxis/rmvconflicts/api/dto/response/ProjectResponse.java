@@ -1,7 +1,7 @@
 package io.github.xaxis.rmvconflicts.api.dto.response;
 
 import io.github.xaxis.rmvconflicts.action.Action;
-import io.github.xaxis.rmvconflicts.project.membership.UserMembership;
+import io.github.xaxis.rmvconflicts.membership.UserMembership;
 
 import java.time.Instant;
 import java.util.List;

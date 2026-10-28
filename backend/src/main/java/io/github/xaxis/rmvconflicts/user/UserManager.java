@@ -27,7 +27,14 @@ public class UserManager {
   }
 
   public void deleteUser(@NotNull Long id) {
-    userRepository.deleteById(id);
+    User user = getUser(id);
+    userRepository.delete(user);
+  }
+
+  public User getUser(@NotNull Long id) {
+    return getUserById(id).orElseThrow(() ->
+        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
+    );
   }
 
   public Optional<User> getUserById(@NotNull Long id) {

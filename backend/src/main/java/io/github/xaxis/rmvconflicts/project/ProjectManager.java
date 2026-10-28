@@ -1,7 +1,10 @@
 package io.github.xaxis.rmvconflicts.project;
 
+import io.github.xaxis.rmvconflicts.action.UserAction;
 import io.github.xaxis.rmvconflicts.api.dto.response.ProjectResponse;
+import io.github.xaxis.rmvconflicts.api.exceptions.ProjectNotFoundException;
 import io.github.xaxis.rmvconflicts.api.exceptions.UserNotFoundException;
+import io.github.xaxis.rmvconflicts.membership.ProjectRole;
 import io.github.xaxis.rmvconflicts.user.User;
 import io.github.xaxis.rmvconflicts.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -33,8 +36,16 @@ public class ProjectManager {
     return projectRepository.findById(id);
   }
 
+  public Project getProject(@NotNull Long id) {
+    return projectRepository.findById(id).orElseThrow(
+        () -> new ProjectNotFoundException(id)
+    );
+  }
+
+  @Transactional
   public void deleteProject(@NotNull Long id) {
-    projectRepository.deleteById(id);
+    Project project = getProject(id);
+    projectRepository.delete(project);
   }
 
   @Transactional
@@ -45,11 +56,15 @@ public class ProjectManager {
   ) {
 
     User owner = userRepository.findById(ownerId)
-        .orElseThrow(() -> new UserNotFoundException("User not found with id: " + ownerId));
+        .orElseThrow(() -> new UserNotFoundException(ownerId));
 
-    Project project = projectRepository.save(
-        new Project(projectName, owner, githubRepositoryUrl)
-    );
+    Project project = new Project(projectName, owner, githubRepositoryUrl);
+
+    project.addMember(owner, ProjectRole.OWNER);
+
+    project.addAction(UserAction.PROJECT_CREATION, owner);
+
+    project = projectRepository.save(project);
 
     return new ProjectResponse(
         project.getId(),

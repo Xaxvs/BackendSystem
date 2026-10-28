@@ -1,4 +1,4 @@
-package io.github.xaxis.rmvconflicts.project.membership;
+package io.github.xaxis.rmvconflicts.membership;
 
 public enum ProjectRole {
   VIEWER,
