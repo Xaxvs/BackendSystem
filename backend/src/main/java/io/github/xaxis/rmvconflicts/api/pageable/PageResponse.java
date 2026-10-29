@@ -1,4 +1,4 @@
-package io.github.xaxis.rmvconflicts.api;
+package io.github.xaxis.rmvconflicts.api.pageable;
 
 import jakarta.validation.constraints.*;
 

@@ -1,17 +1,13 @@
 package io.github.xaxis.rmvconflicts.user;
 
+import io.github.xaxis.rmvconflicts.api.pageable.PageableUtils;
+import io.github.xaxis.rmvconflicts.specifications.UserSpecifications;
 import jakarta.validation.constraints.NotNull;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Optional;
 
 @Service
 public class UserManager {
@@ -32,37 +28,19 @@ public class UserManager {
   }
 
   public User getUser(@NotNull Long id) {
-    return getUserById(id).orElseThrow(() ->
-        new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
-    );
+    return getUserById(id)
+        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
   }
 
   public Optional<User> getUserById(@NotNull Long id) {
     return userRepository.findById(id);
   }
 
-  public Pageable createUserPageable(int page, int size, String direction, String sortBy) {
-    if (page < 0 || size <= 0 || size > 100) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Bad size or page: createUserPageable");
-    }
-    if (direction == null || Arrays.stream(Sort.Direction.values()).noneMatch(dirEnum -> dirEnum.name().toLowerCase(Locale.ROOT).equals(direction))) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid direction or null: createUserPageable");
-    }
-    return PageRequest.of(
-        page,
-        size,
-        Sort.by(
-            Sort.Direction.fromString(direction),
-            sortBy,
-            "id"
-        )
-    );
-  }
-
-  public Page<User> findUsers(int page, int size, String direction, String sortBy, UserStatus userStatus, String q) {
+  public Page<User> findUsers(
+      int page, int size, String direction, String sortBy, UserStatus userStatus, String q) {
     return userRepository.findAll(
-        UserSpecifications.hasStatus(userStatus).and(UserSpecifications.hasText(q)),
-        createUserPageable(page, size, direction, sortBy)
-    );
+        UserSpecifications.statusMatches(userStatus)
+            .and(UserSpecifications.usernameOrEmailMatches(q)),
+        PageableUtils.createPageable(page, size, direction, sortBy));
   }
 }

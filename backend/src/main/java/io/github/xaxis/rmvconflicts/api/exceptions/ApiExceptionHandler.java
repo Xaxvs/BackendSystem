@@ -52,4 +52,13 @@ public class ApiExceptionHandler {
             e.getMessage()
         ));
   }
+
+  @ExceptionHandler(FileClaimNotFoundException.class)
+  public ResponseEntity<ApiError> handleProjectNotFound(FileClaimNotFoundException e) {
+    return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        .body(new ApiError(
+            "FILE_CLAIM_NOT_FOUND",
+            e.getMessage()
+        ));
+  }
 }

@@ -1,9 +1,8 @@
 package io.github.xaxis.rmvconflicts.api.controller;
 
-import io.github.xaxis.rmvconflicts.api.PageResponse;
 import io.github.xaxis.rmvconflicts.api.dto.request.UserRequest;
 import io.github.xaxis.rmvconflicts.api.dto.response.UserResponse;
-import io.github.xaxis.rmvconflicts.api.exceptions.UserNotFoundException;
+import io.github.xaxis.rmvconflicts.api.pageable.PageResponse;
 import io.github.xaxis.rmvconflicts.user.User;
 import io.github.xaxis.rmvconflicts.user.UserManager;
 import io.github.xaxis.rmvconflicts.user.UserStatus;
@@ -13,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/users")
@@ -59,23 +57,20 @@ public class UserController {
       @RequestParam(defaultValue = "displayName") String sortBy,
       @RequestParam(defaultValue = "desc") String direction,
       @RequestParam(required = false) UserStatus userStatus,
-      @RequestParam(required = false) String q
-  ) {
+      @RequestParam(required = false) String query) {
 
-    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy, userStatus, q);
+    Page<User> tickets = userManager.findUsers(page, size, direction, sortBy, userStatus, query);
 
-    PageResponse<UserResponse> request = new PageResponse<>(
-        tickets.getContent().stream().map(this::toUserResponse).toList(),
-        tickets.getNumber(),
-        tickets.getSize(),
-        tickets.getTotalPages(),
-        tickets.getTotalElements(),
-        tickets.isFirst(),
-        tickets.isLast()
-    );
+    PageResponse<UserResponse> request =
+        new PageResponse<>(
+            tickets.getContent().stream().map(this::toUserResponse).toList(),
+            tickets.getNumber(),
+            tickets.getSize(),
+            tickets.getTotalPages(),
+            tickets.getTotalElements(),
+            tickets.isFirst(),
+            tickets.isLast());
 
     return ResponseEntity.ok(request);
   }
-
 }
-
