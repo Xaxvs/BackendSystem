@@ -30,6 +30,38 @@ public class ProjectManager {
   }
 
   @Transactional
+  public Project updateLastActivityAt(@NotNull Long id) {
+    Project project = getProject(id);
+    project.setLastActivityAt(java.time.Instant.now());
+    return projectRepository.save(project);
+  }
+
+  @Transactional
+  public Project changeProjectName(@NotNull Long id, @NotNull String newName) {
+    Project project = getProject(id);
+    project.setName(newName);
+    return projectRepository.save(project);
+  }
+
+  @Transactional
+  public Project changeProjectGithubRepositoryUrl(@NotNull Long id, @NotNull String newUrl) {
+    Project project = getProject(id);
+    project.setGithubRepositoryUrl(newUrl);
+    return projectRepository.save(project);
+  }
+
+  @Transactional
+  public Project changeProjectOwner(@NotNull Long id, @NotNull Long newOwnerId) {
+    Project project = getProject(id);
+    User newOwner =
+        userRepository
+            .findById(newOwnerId)
+            .orElseThrow(() -> new UserNotFoundException(newOwnerId));
+    project.setOwner(newOwner);
+    return projectRepository.save(project);
+  }
+
+  @Transactional
   public void deleteProject(@NotNull Long id) {
     Project project = getProject(id);
     projectRepository.delete(project);

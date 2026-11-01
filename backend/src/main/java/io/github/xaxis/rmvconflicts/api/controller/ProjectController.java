@@ -56,6 +56,33 @@ public class ProjectController {
     return ResponseEntity.status(HttpStatus.CREATED).body(project);
   }
 
+  @PatchMapping("/{id}/name")
+  public ResponseEntity<ProjectResponse> changeProjectName(
+      @PathVariable Long id, @RequestBody String newName) {
+    Project project = projectManager.changeProjectName(id, newName);
+    return ResponseEntity.ok(toProjectResponse(project));
+  }
+
+  @PatchMapping("/{id}/github-repository-url")
+  public ResponseEntity<ProjectResponse> changeProjectGithubRepositoryUrl(
+      @PathVariable Long id, @RequestBody String newUrl) {
+    Project project = projectManager.changeProjectGithubRepositoryUrl(id, newUrl);
+    return ResponseEntity.ok(toProjectResponse(project));
+  }
+
+  @PatchMapping("/{id}/owner")
+  public ResponseEntity<ProjectResponse> changeProjectOwner(
+      @PathVariable Long id, @RequestBody Long newOwnerId) {
+    Project project = projectManager.changeProjectOwner(id, newOwnerId);
+    return ResponseEntity.ok(toProjectResponse(project));
+  }
+
+  @PatchMapping("/{id}/last-activity-at")
+  public ResponseEntity<ProjectResponse> updateLastActivityAt(@PathVariable Long id) {
+    Project project = projectManager.updateLastActivityAt(id);
+    return ResponseEntity.ok(toProjectResponse(project));
+  }
+
   @GetMapping
   public ResponseEntity<PageResponse<ProjectResponse>> getProjects(
       @RequestParam(defaultValue = "0") int page,

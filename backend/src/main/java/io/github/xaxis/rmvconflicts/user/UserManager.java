@@ -37,10 +37,11 @@ public class UserManager {
   }
 
   public Page<User> findUsers(
-      int page, int size, String direction, String sortBy, UserStatus userStatus, String q) {
+      int page, int size, String direction, String sortBy, UserStatus userStatus, String query) {
     return userRepository.findAll(
         UserSpecifications.statusMatches(userStatus)
-            .and(UserSpecifications.usernameOrEmailMatches(q)),
+            .and(UserSpecifications.usernameOrEmailMatches(query)),
         PageableUtils.createPageable(page, size, direction, sortBy));
   }
+
 }

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import jdk.jfr.Timestamp;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
@@ -25,6 +27,14 @@ public class Project {
 
   @Getter
   @OneToMany(mappedBy = "project")
+  /*
+  Figure out what to do about actions...
+  Should they be deleted and possibly lose important information?
+  Or should they be backed up, saved to their computer, or logged
+  somewhere for them to look at if they need to?
+  Maybe the option to delete the actions along with the project
+  or keep them backed up in a log file or something.
+   */
   private final List<Action> actions = new ArrayList<>();
 
   @Getter
@@ -36,14 +46,6 @@ public class Project {
   @Column(nullable = false, name = "file_claims")
   private final Set<FileClaim> fileClaims = new HashSet<>();
 
-  /*
-  Figure out what to do about actions...
-  Should they be deleted and possibly lose important information?
-  Or should they be backed up, saved to their computer, or logged
-  somewhere for them to look at if they need to?
-  Maybe the option to delete the actions along with the project
-  or keep them backed up in a log file or something.
-   */
   @Getter
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,6 +58,7 @@ public class Project {
 
   @Getter
   @Setter
+  @Timestamp
   @Column(name = "last_activity_at", nullable = false)
   private Instant lastActivityAt;
 
