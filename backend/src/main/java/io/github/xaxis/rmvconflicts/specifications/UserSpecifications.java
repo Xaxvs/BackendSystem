@@ -10,12 +10,11 @@ public class UserSpecifications {
   private UserSpecifications() {}
 
   public static Specification<User> statusMatches(UserStatus userStatus) {
-    return ((root, query, criteriaBuilder) -> {
+    return ((root, query, cb) -> {
       if (userStatus == null) {
-        return criteriaBuilder.conjunction();
+        return cb.conjunction();
       }
-      return criteriaBuilder.equal(
-          root.get("status"), userStatus.toString().toLowerCase(Locale.ROOT));
+      return cb.equal(root.get("status"), userStatus);
     });
   }
 
@@ -25,7 +24,7 @@ public class UserSpecifications {
       final String text = q.trim().toLowerCase(Locale.ROOT);
 
       return cb.or(
-          cb.like(cb.lower(root.get("displayName")), "%" + text + "%"),
+          cb.like(cb.lower(root.get("username")), "%" + text + "%"),
           cb.like(cb.lower(root.get("email")), "%" + text + "%"));
     });
   }

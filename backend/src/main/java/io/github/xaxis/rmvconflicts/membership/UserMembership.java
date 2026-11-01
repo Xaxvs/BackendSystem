@@ -11,10 +11,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(
     name = "user_memberships",
-    uniqueConstraints = @UniqueConstraint(
-        columnNames = {"project_id", "user_id"}
-    )
-)
+    uniqueConstraints = @UniqueConstraint(columnNames = {"project_id", "user_id"}))
 public class UserMembership {
 
   @Id
@@ -39,8 +36,7 @@ public class UserMembership {
   @Enumerated(EnumType.STRING)
   private ProjectRole role;
 
-  protected UserMembership() {
-  }
+  protected UserMembership() {}
 
   public UserMembership(Project project, User user, ProjectRole role) {
     this.project = project;

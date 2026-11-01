@@ -1,31 +1,38 @@
 package io.github.xaxis.rmvconflicts.api.pageable;
 
 import jakarta.validation.constraints.*;
-
 import java.util.List;
 
-public record PageResponse<T>(
+import org.springframework.data.domain.Page;
 
-        @NotNull
-        List<T> content,
+public record PageResponse<T>(List<T> content, int page, int size, int totalPages, long totalElements, boolean first, boolean last) {
 
-        @PositiveOrZero
-        int page,
+  public PageResponse(
+      @NotNull List<T> content,
+      @PositiveOrZero int page,
+      @Positive @Min(1) @Max(100) int size,
+      @PositiveOrZero int totalPages,
+      @PositiveOrZero long totalElements,
+      boolean first,
+      boolean last) {
+    this.content = content;
+    this.page = page;
+    this.size = size;
+    this.totalPages = totalPages;
+    this.totalElements = totalElements;
+    this.first = first;
+    this.last = last;
+  }
 
-        @Positive
-        @Min(1)
-        @Max(100)
-        int size,
+  public PageResponse(@NotNull List<T> content, Page<?> page) {
+    this(
+        content,
+        page.getNumber(),
+        page.getSize(),
+        page.getTotalPages(),
+        page.getTotalElements(),
+        page.isFirst(),
+        page.isLast());
+  }
 
-        @PositiveOrZero
-        int totalPages,
-
-        @PositiveOrZero
-        long totalElements,
-
-        boolean first,
-
-        boolean last
-
-) {
 }

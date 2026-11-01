@@ -3,12 +3,15 @@ package io.github.xaxis.rmvconflicts.fileclaim;
 import io.github.xaxis.rmvconflicts.api.exceptions.FileClaimNotFoundException;
 import io.github.xaxis.rmvconflicts.api.exceptions.ProjectNotFoundException;
 import io.github.xaxis.rmvconflicts.api.exceptions.UserNotFoundException;
+import io.github.xaxis.rmvconflicts.api.pageable.PageableUtils;
 import io.github.xaxis.rmvconflicts.project.Project;
 import io.github.xaxis.rmvconflicts.project.ProjectRepository;
+import io.github.xaxis.rmvconflicts.specifications.FileClaimSpecifications;
 import io.github.xaxis.rmvconflicts.user.User;
 import io.github.xaxis.rmvconflicts.user.UserRepository;
 import jakarta.transaction.Transactional;
 import java.time.Instant;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,5 +59,22 @@ public class FileClaimManager {
     fileClaim = fileClaimRepository.save(fileClaim);
 
     return fileClaim;
+  }
+
+  public Page<FileClaim> findFileClaims(
+      int page,
+      int size,
+      String direction,
+      String sortBy,
+      String username,
+      String projectName,
+      FileType fileType,
+      ClaimState claimState) {
+    return fileClaimRepository.findAll(
+        FileClaimSpecifications.usernameMatches(username)
+            .and(FileClaimSpecifications.projectNameMatches(projectName))
+            .and(FileClaimSpecifications.fileTypeMatches(fileType))
+            .and(FileClaimSpecifications.claimStateMatches(claimState)),
+        PageableUtils.createPageable(page, size, direction, sortBy));
   }
 }

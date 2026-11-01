@@ -11,7 +11,6 @@ import io.github.xaxis.rmvconflicts.user.User;
 import io.github.xaxis.rmvconflicts.user.UserRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
-import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -24,10 +23,6 @@ public class ProjectManager {
   public ProjectManager(ProjectRepository projectRepository, UserRepository userRepository) {
     this.projectRepository = projectRepository;
     this.userRepository = userRepository;
-  }
-
-  public Optional<Project> getProjectById(@NotNull Long id) {
-    return projectRepository.findById(id);
   }
 
   public Project getProject(@NotNull Long id) {

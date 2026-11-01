@@ -33,6 +33,7 @@ public class Project {
 
   @Getter
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
+  @Column(nullable = false, name = "file_claims")
   private final Set<FileClaim> fileClaims = new HashSet<>();
 
   /*

@@ -27,7 +27,7 @@ public class ProjectSpecifications {
 
       final String text = q.trim().toLowerCase(Locale.ROOT);
 
-      return cb.or(cb.like(cb.lower(root.get("name")), "%" + text + "%"));
+      return cb.like(cb.lower(root.get("name")), "%" + text + "%");
     };
   }
 

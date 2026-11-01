@@ -63,13 +63,7 @@ public class UserController {
 
     PageResponse<UserResponse> request =
         new PageResponse<>(
-            tickets.getContent().stream().map(this::toUserResponse).toList(),
-            tickets.getNumber(),
-            tickets.getSize(),
-            tickets.getTotalPages(),
-            tickets.getTotalElements(),
-            tickets.isFirst(),
-            tickets.isLast());
+            tickets.getContent().stream().map(this::toUserResponse).toList(), tickets);
 
     return ResponseEntity.ok(request);
   }

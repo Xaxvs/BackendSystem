@@ -61,10 +61,11 @@ public class MembershipManager {
       String sortBy,
       String projectName,
       String userName,
-      String projectRole) {
-    //todo finish
+      ProjectRole projectRole) {
     return membershipRepository.findAll(
-        UserMembershipSpecifications.projectNameMatches(projectName),
+        UserMembershipSpecifications.projectNameMatches(projectName)
+            .and(UserMembershipSpecifications.usernameMatches(userName))
+            .and(UserMembershipSpecifications.projectRoleMatches(projectRole)),
         PageableUtils.createPageable(page, size, direction, sortBy));
   }
 }
