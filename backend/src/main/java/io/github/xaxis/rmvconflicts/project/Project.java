@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import jdk.jfr.Timestamp;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.jspecify.annotations.NullMarked;
 
@@ -25,7 +23,6 @@ import org.jspecify.annotations.NullMarked;
 @Table(name = "projects")
 public class Project {
 
-  @Getter
   @OneToMany(mappedBy = "project")
   /*
   Figure out what to do about actions...
@@ -37,44 +34,32 @@ public class Project {
    */
   private final List<Action> actions = new ArrayList<>();
 
-  @Getter
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   private final Set<UserMembership> members = new HashSet<>();
 
-  @Getter
   @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, orphanRemoval = true)
   @Column(nullable = false, name = "file_claims")
   private final Set<FileClaim> fileClaims = new HashSet<>();
 
-  @Getter
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Getter
-  @Setter
   @Column(name = "name", nullable = false)
   private String name;
 
-  @Getter
-  @Setter
   @Timestamp
   @Column(name = "last_activity_at", nullable = false)
   private Instant lastActivityAt;
 
-  @Getter
   @CreationTimestamp
   @Column(name = "created_at", updatable = false, nullable = false)
   private Instant createdAt;
 
-  @Getter
-  @Setter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "owner_id", nullable = false)
   private User owner;
 
-  @Getter
-  @Setter
   @Column(name = "github_repository_url", nullable = false)
   private String githubRepositoryUrl;
 
@@ -85,6 +70,7 @@ public class Project {
     this.name = name;
     this.owner = owner;
     this.githubRepositoryUrl = githubRepositoryUrl;
+    this.lastActivityAt = Instant.now();
   }
 
   public UserMembership addMember(User user, ProjectRole role) {
@@ -95,7 +81,6 @@ public class Project {
 
   public void removeAction(Action action) {
     actions.remove(action);
-    action.cleanup();
   }
 
   public Action addAction(UserAction userAction, User user) {
@@ -106,12 +91,10 @@ public class Project {
 
   public void removeMember(UserMembership user) {
     members.remove(user);
-    user.cleanup();
   }
 
   public void removeClaim(FileClaim fileClaim) {
     fileClaims.remove(fileClaim);
-    fileClaim.cleanup();
   }
 
   public FileClaim addClaim(
@@ -119,5 +102,21 @@ public class Project {
     FileClaim fileClaim = new FileClaim(path, duration, this, user, fileType, claimState);
     fileClaims.add(fileClaim);
     return fileClaim;
+  }
+
+  public List<Action> getActions() { return actions; }
+  public Set<UserMembership> getMembers() { return members; }
+  public Set<FileClaim> getFileClaims() { return fileClaims; }
+  public Long getId() { return id; }
+  public String getName() { return name; }
+  public void setName(String name) { this.name = name; }
+  public Instant getLastActivityAt() { return lastActivityAt; }
+  public void setLastActivityAt(Instant lastActivityAt) { this.lastActivityAt = lastActivityAt; }
+  public Instant getCreatedAt() { return createdAt; }
+  public User getOwner() { return owner; }
+  public void setOwner(User owner) { this.owner = owner; }
+  public String getGithubRepositoryUrl() { return githubRepositoryUrl; }
+  public void setGithubRepositoryUrl(String githubRepositoryUrl) {
+    this.githubRepositoryUrl = githubRepositoryUrl;
   }
 }

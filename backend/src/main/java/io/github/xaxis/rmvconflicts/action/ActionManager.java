@@ -37,6 +37,7 @@ public class ActionManager {
   public void deleteAction(Long id) {
     Action action = getAction(id);
     action.getProject().removeAction(action);
+    actionRepository.delete(action);
   }
 
   @Transactional

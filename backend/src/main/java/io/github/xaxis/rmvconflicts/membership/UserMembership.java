@@ -3,8 +3,6 @@ package io.github.xaxis.rmvconflicts.membership;
 import io.github.xaxis.rmvconflicts.project.Project;
 import io.github.xaxis.rmvconflicts.user.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -15,24 +13,19 @@ import org.hibernate.annotations.OnDeleteAction;
 public class UserMembership {
 
   @Id
-  @Getter
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Getter
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @OnDelete(action = OnDeleteAction.CASCADE)
   @JoinColumn(name = "project_id", nullable = false)
   private Project project;
 
-  @Getter
   @OnDelete(action = OnDeleteAction.CASCADE)
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
   private User user;
 
-  @Getter
-  @Setter
   @Enumerated(EnumType.STRING)
   private ProjectRole role;
 
@@ -48,4 +41,10 @@ public class UserMembership {
     project = null;
     user = null;
   }
+
+  public Long getId() { return id; }
+  public Project getProject() { return project; }
+  public User getUser() { return user; }
+  public ProjectRole getRole() { return role; }
+  public void setRole(ProjectRole role) { this.role = role; }
 }

@@ -12,6 +12,7 @@ import io.github.xaxis.rmvconflicts.user.User;
 import io.github.xaxis.rmvconflicts.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MembershipManager {
@@ -33,11 +34,30 @@ public class MembershipManager {
     return membershipRepository.findById(id).orElseThrow(() -> new MembershipNotFoundException(id));
   }
 
+  public UserMembership getMembership(Long projectId, Long userId) {
+    return membershipRepository
+        .findByProject_IdAndUser_Id(projectId, userId)
+        .orElseThrow(() -> new MembershipNotFoundException(userId));
+  }
+
+  @Transactional
   public void deleteMembership(Long id) {
     UserMembership membership = getMembership(id);
     membership.getProject().removeMember(membership);
+    membershipRepository.delete(membership);
   }
 
+  @Transactional
+  public void deleteMembership(Long projectId, Long userId) {
+    UserMembership membership =
+        membershipRepository
+            .findByProject_IdAndUser_Id(projectId, userId)
+            .orElseThrow(() -> new MembershipNotFoundException(userId));
+    membership.getProject().removeMember(membership);
+    membershipRepository.delete(membership);
+  }
+
+  @Transactional
   public UserMembership createMembership(Long projectId, Long userId, ProjectRole projectRole) {
     if (membershipRepository.existsByProject_IdAndUser_Id(projectId, userId)) {
       throw new MembershipAlreadyExistsException("Membership already exists in project");
@@ -52,6 +72,12 @@ public class MembershipManager {
         userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     return project.addMember(user, projectRole);
+  }
+
+  public UserMembership updateMembershipRole(Long projectId, Long userId, ProjectRole newRole) {
+    UserMembership membership = getMembership(projectId, userId);
+    membership.setRole(newRole);
+    return membershipRepository.save(membership);
   }
 
   public Page<UserMembership> findMemberships(

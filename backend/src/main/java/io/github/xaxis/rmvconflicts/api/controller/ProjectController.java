@@ -6,6 +6,8 @@ import io.github.xaxis.rmvconflicts.api.pageable.PageResponse;
 import io.github.xaxis.rmvconflicts.project.Project;
 import io.github.xaxis.rmvconflicts.project.ProjectManager;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,12 +38,12 @@ public class ProjectController {
   }
 
   @DeleteMapping("/{id}")
-  public void deleteProject(@PathVariable Long id) {
+  public void deleteProject(@PathVariable @NotNull Long id) {
     projectManager.deleteProject(id);
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<ProjectResponse> getProject(@PathVariable Long id) {
+  public ResponseEntity<ProjectResponse> getProject(@PathVariable @NotNull Long id) {
     Project project = projectManager.getProject(id);
     return ResponseEntity.ok(toProjectResponse(project));
   }
@@ -58,27 +60,27 @@ public class ProjectController {
 
   @PatchMapping("/{id}/name")
   public ResponseEntity<ProjectResponse> changeProjectName(
-      @PathVariable Long id, @RequestBody String newName) {
+      @PathVariable @NotNull Long id, @RequestBody @NotBlank String newName) {
     Project project = projectManager.changeProjectName(id, newName);
     return ResponseEntity.ok(toProjectResponse(project));
   }
 
   @PatchMapping("/{id}/github-repository-url")
   public ResponseEntity<ProjectResponse> changeProjectGithubRepositoryUrl(
-      @PathVariable Long id, @RequestBody String newUrl) {
+      @PathVariable @NotNull Long id, @RequestBody @NotBlank String newUrl) {
     Project project = projectManager.changeProjectGithubRepositoryUrl(id, newUrl);
     return ResponseEntity.ok(toProjectResponse(project));
   }
 
   @PatchMapping("/{id}/owner")
   public ResponseEntity<ProjectResponse> changeProjectOwner(
-      @PathVariable Long id, @RequestBody Long newOwnerId) {
+      @PathVariable @NotNull Long id, @RequestBody @NotNull Long newOwnerId) {
     Project project = projectManager.changeProjectOwner(id, newOwnerId);
     return ResponseEntity.ok(toProjectResponse(project));
   }
 
   @PatchMapping("/{id}/last-activity-at")
-  public ResponseEntity<ProjectResponse> updateLastActivityAt(@PathVariable Long id) {
+  public ResponseEntity<ProjectResponse> updateLastActivityAt(@PathVariable @NotNull Long id) {
     Project project = projectManager.updateLastActivityAt(id);
     return ResponseEntity.ok(toProjectResponse(project));
   }

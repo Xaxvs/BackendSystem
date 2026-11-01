@@ -18,7 +18,7 @@ public class ActionSpecifications {
 
       final String text = projectName.trim().toLowerCase(Locale.ROOT);
 
-      return cb.like(root.get("project").get("name"), "%" + text + "%");
+      return cb.like(cb.lower(root.get("project").get("name")), "%" + text + "%");
     };
   }
 

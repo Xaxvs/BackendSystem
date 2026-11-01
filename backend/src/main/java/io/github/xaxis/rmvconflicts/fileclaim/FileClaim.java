@@ -6,13 +6,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.time.Instant;
 import jdk.jfr.Timestamp;
-import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
-@Getter
 @Table(name = "file_claims")
 public class FileClaim {
 
@@ -20,16 +19,18 @@ public class FileClaim {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotBlank private String path;
+  @Setter @NotBlank private String path;
 
   @CreationTimestamp
   @Column(nullable = false, name = "created_at")
   private Instant createdAt;
 
+  @Setter
   @Timestamp
   @Column(nullable = false, name = "expires_at")
   private Instant expiresAt;
 
+  @Setter
   @Timestamp
   @Column(name = "released_at")
   private Instant releasedAt;
@@ -44,10 +45,12 @@ public class FileClaim {
   @JoinColumn(name = "user_id")
   private User user;
 
+  @Setter
   @Enumerated(value = EnumType.STRING)
   @Column(name = "file_type")
   private FileType fileType;
 
+  @Setter
   @Column(name = "claim_state")
   @Enumerated(value = EnumType.STRING)
   private ClaimState claimState;
@@ -65,6 +68,8 @@ public class FileClaim {
     this.user = user;
     this.fileType = fileType;
     this.claimState = claimState;
+    this.createdAt = Instant.now();
+    this.releasedAt = null;
   }
 
   protected FileClaim() {}
@@ -74,4 +79,39 @@ public class FileClaim {
     this.user = null;
   }
 
+  public Long getId() {
+    return id;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public Instant getExpiresAt() {
+    return expiresAt;
+  }
+
+  public Instant getReleasedAt() {
+    return releasedAt;
+  }
+
+  public Project getProject() {
+    return project;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public FileType getFileType() {
+    return fileType;
+  }
+
+  public ClaimState getClaimState() {
+    return claimState;
+  }
 }

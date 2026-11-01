@@ -39,7 +39,7 @@ public class ApiExceptionHandler {
   public ResponseEntity<ApiError> handleActionNotFound(ActionNotFoundException e) {
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
         .body(new ApiError(
-            "USER_MEMBERSHIP_NOT_FOUND",
+            "ACTION_NOT_FOUND",
             e.getMessage()
         ));
   }

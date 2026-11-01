@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/user_memberships")
@@ -48,9 +49,37 @@ public class MembershipController {
     return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(userMembership));
   }
 
+  @DeleteMapping("/project/{projectId}/user/{userId}")
+  public ResponseEntity<Void> deleteMembership(
+      @PathVariable @NotNull Long projectId, @PathVariable @NotNull Long userId) {
+    membershipManager.deleteMembership(projectId, userId);
+    return ResponseEntity.ok().build();
+  }
+
   @DeleteMapping("/{id}")
-  public void deleteMembership(@PathVariable @NotNull Long id) {
+  public ResponseEntity<Void> deleteMembership(@PathVariable @NotNull Long id) {
     membershipManager.deleteMembership(id);
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/{id}")
+  @Transactional
+  public ResponseEntity<UserMembershipResponse> updateMembership(
+      @PathVariable @NotNull Long id, @RequestParam @NotNull ProjectRole projectRole) {
+    UserMembership userMembership = membershipManager.getMembership(id);
+    userMembership.setRole(projectRole);
+    return ResponseEntity.ok(toResponse(userMembership));
+  }
+
+  @PatchMapping("/project/{projectId}/user/{userId}")
+  @Transactional
+  public ResponseEntity<UserMembershipResponse> updateMembership(
+      @PathVariable @NotNull Long projectId,
+      @PathVariable @NotNull Long userId,
+      @RequestParam @NotNull ProjectRole projectRole) {
+    UserMembership userMembership =
+        membershipManager.updateMembershipRole(projectId, userId, projectRole);
+    return ResponseEntity.ok(toResponse(userMembership));
   }
 
   @GetMapping

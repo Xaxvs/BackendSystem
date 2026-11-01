@@ -7,7 +7,9 @@ import io.github.xaxis.rmvconflicts.fileclaim.ClaimState;
 import io.github.xaxis.rmvconflicts.fileclaim.FileClaim;
 import io.github.xaxis.rmvconflicts.fileclaim.FileClaimManager;
 import io.github.xaxis.rmvconflicts.fileclaim.FileType;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
+import java.time.Instant;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +39,52 @@ public class FileClaimController {
         fileClaim.getClaimState());
   }
 
+  @DeleteMapping("/user/{userId}/project/{projectId}")
+  public void deleteFileClaimByUserIdAndProjectId(
+      @PathVariable @NotNull Long userId, @PathVariable @NotNull Long projectId) {
+    fileClaimManager.deleteFileClaimByUserIdAndProjectId(userId, projectId);
+  }
+
+  @DeleteMapping("/project/{projectId}")
+  public void deleteFileClaimsByProjectId(@PathVariable @NotNull Long projectId) {
+    fileClaimManager.deleteFileClaimsByProjectId(projectId);
+  }
+
+  @PatchMapping("/{id}/releasedAt")
+  public ResponseEntity<FileClaimResponse> releaseFileClaim(@PathVariable @NotNull Long id) {
+    FileClaim fileClaim = fileClaimManager.releaseFileClaim(id);
+    return ResponseEntity.ok(toResponse(fileClaim));
+  }
+
+  @PatchMapping("/{id}/expiresAt")
+  public ResponseEntity<FileClaimResponse> extendFileClaim(
+      @PathVariable @NotNull Long id, @RequestParam @NotNull Long additionalSeconds) {
+    FileClaim fileClaim =
+        fileClaimManager.extendFileClaim(id, Instant.now().plusSeconds(additionalSeconds));
+    return ResponseEntity.ok(toResponse(fileClaim));
+  }
+
+  @PatchMapping("/{id}/claimState")
+  public ResponseEntity<FileClaimResponse> updateFileClaimState(
+      @PathVariable @NotNull Long id, @RequestParam @NotNull ClaimState claimState) {
+    FileClaim fileClaim = fileClaimManager.updateFileClaimState(id, claimState);
+    return ResponseEntity.ok(toResponse(fileClaim));
+  }
+
+  @PatchMapping("/{id}/fileType")
+  public ResponseEntity<FileClaimResponse> updateFileClaimFileType(
+      @PathVariable @NotNull Long id, @RequestParam @NotNull FileType fileType) {
+    FileClaim fileClaim = fileClaimManager.updateFileClaimFileType(id, fileType);
+    return ResponseEntity.ok(toResponse(fileClaim));
+  }
+
+  @PatchMapping("/{id}/path")
+  public ResponseEntity<FileClaimResponse> updateFileClaimPath(
+      @PathVariable @NotNull Long id, @RequestParam @NotNull String path) {
+    FileClaim fileClaim = fileClaimManager.updateFileClaimPath(id, path);
+    return ResponseEntity.ok(toResponse(fileClaim));
+  }
+
   @GetMapping("/{id}")
   public ResponseEntity<FileClaimResponse> getFileClaim(@PathVariable @NotNull Long id) {
     FileClaim fileClaim = fileClaimManager.getFileClaim(id);
@@ -50,7 +98,7 @@ public class FileClaimController {
 
   @PostMapping
   public ResponseEntity<FileClaimResponse> createFileClaim(
-      @RequestBody @NotNull FileClaimCreationRequest creationRequest) {
+      @RequestBody @Valid FileClaimCreationRequest creationRequest) {
 
     FileClaim fileClaim =
         fileClaimManager.createFileClaim(
