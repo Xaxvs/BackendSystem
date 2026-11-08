@@ -10,6 +10,8 @@ import io.github.xaxis.rmvconflicts.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FileActivityManager {
 
@@ -30,6 +32,14 @@ public class FileActivityManager {
     return fileActivityRepository
         .findById(id)
         .orElseThrow(() -> new FileActivityNotFoundException(id));
+  }
+
+  public List<FileActivity> getFileActivitiesByProject(Long projectId) {
+    return fileActivityRepository.findByProject_Id(projectId);
+  }
+
+  public List<FileActivity> getFileActivitiesByUser(Long userId) {
+    return fileActivityRepository.findByUser_Id(userId);
   }
 
   @Transactional
@@ -62,5 +72,10 @@ public class FileActivityManager {
     activity.setActivityType(activityType);
 
     return fileActivityRepository.save(activity);
+  }
+
+  @Transactional
+  public void deleteFileActivitiesByUser(Long userId) {
+    fileActivityRepository.deleteByUser_Id(userId);
   }
 }
